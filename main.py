@@ -26,12 +26,11 @@ async def memory_eviction():
                     print("Evicted 100 oldest cache items to reduce memory usage.")
             except KeyError:
                 print("Cache is already empty.")
-        await asyncio.sleep(1)  # Non-blocking sleep
+        await asyncio.sleep(1) 
 
-# Start the memory eviction process in the background when the app starts
 @app.on_event("startup")
 async def startup_event():
-    asyncio.create_task(memory_eviction())  # Schedule the memory eviction task
+    asyncio.create_task(memory_eviction()) 
 
 @app.post("/put")
 async def put_key_value(item: KeyValue):
