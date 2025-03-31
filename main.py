@@ -4,8 +4,6 @@ from typing import Dict
 import asyncio
 from cachetools import LRUCache
 import psutil
-import threading
-import time
 
 app = FastAPI()
 CACHE_SIZE = 100000
@@ -16,20 +14,25 @@ cache = LRUCache(maxsize=CACHE_SIZE)
 class KeyValue(BaseModel):
     key: str
     value: str
-def memory_eviction():
+
+async def memory_eviction():
     while True:
         memory_usage = psutil.virtual_memory().percent
         if memory_usage > MEMORY_THRESHOLD:
             print(f"Memory usage high ({memory_usage}%), evicting oldest items...")
             try:
                 for _ in range(100): 
-                 cache.popitem()
-                 print("Evicted 100 oldest cache items to reduce memory usage.")
+                    cache.popitem()
+                    print("Evicted 100 oldest cache items to reduce memory usage.")
             except KeyError:
                 print("Cache is already empty.")
-        time.sleep(1)  
+        await asyncio.sleep(1)  # Non-blocking sleep
 
-threading.Thread(target=memory_eviction, daemon=True).start()
+# Start the memory eviction process in the background when the app starts
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(memory_eviction())  # Schedule the memory eviction task
+
 @app.post("/put")
 async def put_key_value(item: KeyValue):
     if len(item.key) > 256 or len(item.value) > 256:
@@ -38,14 +41,14 @@ async def put_key_value(item: KeyValue):
     cache[item.key] = item.value
     return {"status": "OK", "message": "Key inserted/updated successfully."}
 
-# GET: Retrieve value for a given key
 @app.get("/get")
 async def get_key_value(key: str):
     if key in cache:
         return {"status": "OK", "key": key, "value": cache[key]}
-    elif key not in cache: return {"status": "ERROR", "message": "Key not found."}
-    return {"status": "ERROR","message": "Error description explaining what went wrong."}
+    elif key not in cache: 
+        return {"status": "ERROR", "message": "Key not found."}
+    return {"status": "ERROR", "message": "Error description explaining what went wrong."}
+
 @app.get("/")
 async def health_check():
     return {"status": "OK", "message": "Service is running."}
-
