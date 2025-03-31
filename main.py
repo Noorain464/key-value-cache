@@ -48,6 +48,3 @@ async def get_key_value(key: str):
         return {"status": "ERROR", "message": "Key not found."}
     return {"status": "ERROR", "message": "Error description explaining what went wrong."}
 
-@app.get("/")
-async def health_check():
-    return {"status": "OK", "message": "Service is running."}
