@@ -3,8 +3,6 @@ This project implements an in-memory key-value store with basic PUT and GET oper
 ## 🌟 Features
 - **In-Memory Cache**: Uses an LRU (Least Recently Used) eviction policy.
 - **Memory Management**: Automatically evicts items when memory usage exceeds 70%.
-- **REST API**: Implements endpoints for adding, retrieving, and checking service health.
-- **Performance Optimized**: Handles thousands of requests per second on limited hardware (e.g., AWS t3.small).
 
 ## 🛠️ API Endpoints
 
@@ -54,4 +52,8 @@ This project implements an in-memory key-value store with basic PUT and GET oper
       "message": "Key not found."
     }
     ```
+### Build the Docker Image:
+    ```docker build -t key-value-cache .```
+### Run the Docker Container:
+    ```docker run -p 7171:7171 key-value-cache```
 
