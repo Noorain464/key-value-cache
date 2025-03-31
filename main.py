@@ -18,10 +18,11 @@ class KeyValue(BaseModel):
 async def memory_eviction():
     while True:
         memory_usage = psutil.virtual_memory().percent
+        batch_size = int(CACHE_SIZE * (memory_usage - MEMORY_THRESHOLD) / 100)
         if memory_usage > MEMORY_THRESHOLD:
             print(f"Memory usage high ({memory_usage}%), evicting oldest items...")
             try:
-                for _ in range(100): 
+                for _ in range(batch_size): 
                     cache.popitem()
                     print("Evicted 100 oldest cache items to reduce memory usage.")
             except KeyError:
