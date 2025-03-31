@@ -53,7 +53,7 @@ This project implements an in-memory key-value store with basic PUT and GET oper
     }
     ```
 ### Build the Docker Image:
-    ```docker build -t key-value-cache .```
+    docker build -t key-value-cache .
 ### Run the Docker Container:
-    ```docker run -p 7171:7171 key-value-cache```
+    docker run -p 7171:7171 key-value-cache
 
